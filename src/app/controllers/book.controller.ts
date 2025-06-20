@@ -1,8 +1,9 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { Book } from "../models/book.model";
 import { z } from "zod";
 import APIFunctionality from "../../utils/apiFunctionality";
 
+import { errorHandler  } from './../../utils/errorHandler';
 
 export const bookRoutes = express.Router();
 
@@ -18,7 +19,7 @@ const CreateBookZodSchema = z.object({
 });
 
 // Create Book
-bookRoutes.post('/', async (req: Request, res: Response) => {
+bookRoutes.post('/', async (req: Request, res: Response,next:NextFunction):Promise<any> => {
     try {
         //const validatedBody = await CreateBookZodSchema.parseAsync(req.body);
         const validatedBody = req.body
@@ -46,27 +47,12 @@ bookRoutes.post('/', async (req: Request, res: Response) => {
             data: reorderedBook
         });
     } catch (error: any) {
-        res.status(400).json({
-            success: false,
-            message: "Validation failed",
-            error
-        });
+      return errorHandler(error, req, res, next);
     }
 });
 
-// Get All Books (Optional: You can add filtering later)
-// bookRoutes.get('/', async (_req: Request, res: Response) => {
-//     const books = await Book.find();
-
-//     res.status(200).json({
-//         success: true,
-//         message: "Books retrieved successfully",
-//         data: books
-//     });
-// });
-
-
-bookRoutes.get('/', async (req: Request, res: Response): Promise<void> => {
+//Get All Books
+bookRoutes.get('/', async (req: Request, res: Response,next : NextFunction): Promise<void> => {
     try {
         const limit = Number(req.query.limit) || 10;
         const sortBy = req.query.sortBy || "createdAt";
@@ -113,11 +99,7 @@ bookRoutes.get('/', async (req: Request, res: Response): Promise<void> => {
         });
 
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "An error occurred while retrieving books",
-            error: (error as Error).message
-        });
+        next(error);
     }
 });
 
@@ -135,7 +117,7 @@ bookRoutes.get('/', async (req: Request, res: Response): Promise<void> => {
 // })
 
 //Get Book by ID
-bookRoutes.get('/:bookId', async (req: Request, res: Response) => {
+bookRoutes.get('/:bookId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { bookId } = req.params;
 
@@ -148,17 +130,18 @@ bookRoutes.get('/:bookId', async (req: Request, res: Response) => {
     });
 
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to retrieve book",
-      error: (error as Error).message
-    });
+    // res.status(500).json({
+    //   success: false,
+    //   message: "Failed to retrieve book",
+    //   error: (error as Error).message
+    // });
+    next(error);
   }
 });
 
 
 //Update Book
-bookRoutes.put('/:bookId', async (req: Request, res: Response) => {
+bookRoutes.put('/:bookId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { bookId } = req.params;
     const updateData = req.body;
@@ -176,16 +159,12 @@ bookRoutes.put('/:bookId', async (req: Request, res: Response) => {
     });
 
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to update book",
-      error: (error as Error).message
-    });
+    next(error);
   }
 });
 
 //delete book
-bookRoutes.delete('/:bookId', async (req: Request, res: Response) => {
+bookRoutes.delete('/:bookId', async (req: Request, res: Response,next: NextFunction) => {
   try {
     const { bookId } = req.params;
     
@@ -199,10 +178,6 @@ bookRoutes.delete('/:bookId', async (req: Request, res: Response) => {
     });
 
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete book",
-      error: (error as Error).message
-    });
+    next(error);
   }
 });

@@ -3,6 +3,7 @@ import { Borrow } from '../models/borrow.model';
 import { Book } from '../models/book.model';
 import { BookDocument, IBook } from '../interfaces/book.interfaces';
 
+
 export const borrowRoutes = express.Router();
 
 borrowRoutes.post("/", async (req: Request, res: Response, next: NextFunction): Promise<any> => {
@@ -39,11 +40,12 @@ borrowRoutes.post("/", async (req: Request, res: Response, next: NextFunction): 
             data: borrowData
         });
     } catch (error) {
-        return res.status(400).json({
-            success: false,
-            message: 'Borrowing failed',
-            error
-        });
+        // return res.status(400).json({
+        //     success: false,
+        //     message: 'Borrowing failed',
+        //     error
+        // });
+        next(error);
     }
 });
 

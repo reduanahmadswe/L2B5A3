@@ -2,6 +2,7 @@ import { model, Schema } from "mongoose";
 import { IBook } from "../interfaces/book.interfaces";
 
 
+
 export const bookSchema = new Schema<IBook>({
   title: {
     type: String,
@@ -44,7 +45,7 @@ export const bookSchema = new Schema<IBook>({
   copies: {
     type: Number,
     required: [true, "Number of copies is required"],
-    min: [0, "Copies must be a non-negative number"],
+    min: [0, "Copies must be a positive number"],
     validate: {
       validator: function (value: number) {
         return Number.isInteger(value);

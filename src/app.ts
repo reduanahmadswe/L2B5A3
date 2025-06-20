@@ -1,6 +1,7 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import { bookRoutes } from './app/controllers/book.controller';
 import { borrowRoutes } from './app/controllers/borrow.controller';
+import { errorHandler } from './utils/errorHandler'; 
 
 
 const app: Application = express();
@@ -8,10 +9,13 @@ const app: Application = express();
 app.use(express.json());
 
 app.use('/api/books', bookRoutes);
-app.use('/api/borrow',borrowRoutes);
+app.use('/api/borrow', borrowRoutes);
 
-// app.get('/', (req: Request, res: Response) => {
-//   res.send('Welcome to Library Management app!');
-// });
+
+// app.use(errorHandler);
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  errorHandler(err, req, res, next);
+});
+
 
 export default app;
