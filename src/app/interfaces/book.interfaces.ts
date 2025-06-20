@@ -1,3 +1,5 @@
+import { Document } from 'mongoose';
+
 export interface IBook {
     title: string;
     author: string;
@@ -8,4 +10,9 @@ export interface IBook {
     available: boolean;
     createdAt: Date;
     updatedAt: Date;
+}
+
+
+export interface BookDocument extends IBook, Document {
+  updateAvailability: () => void;
 }
