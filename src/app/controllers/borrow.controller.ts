@@ -6,24 +6,67 @@ import { BookDocument, IBook } from '../interfaces/book.interfaces';
 
 export const borrowRoutes = express.Router();
 
-borrowRoutes.post("/", async (req: Request, res: Response ,next: NextFunction) : Promise<any>=> {
-    try {
-        const { book, quantity, dueDate } = req.body;
-        const bookDoc = await Book.findById(book) as BookDocument;
-        if (!bookDoc || bookDoc.copies < quantity) {
-            return res.status(400).json({
-                success: false,
-                message: 'Not enough copies available'
-            });
-        }
-        bookDoc.copies -= quantity;
-        bookDoc.updateAvailability();
-        await bookDoc.save();
-        const borrow = await Borrow.create({ book, quantity, dueDate });
-        res.status(201).json({ success: true, message: 'Book borrowed successfully', data: borrow });
-    } catch (error) {
-        res.status(400).json({ success: false, message: 'Borrowing failed', error });
+// borrowRoutes.post("/", async (req: Request, res: Response ,next: NextFunction) : Promise<any>=> {
+//     try {
+//         const { book, quantity, dueDate } = req.body;
+//         const bookDoc = await Book.findById(book) as BookDocument;
+//         if (!bookDoc || bookDoc.copies < quantity) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: 'Not enough copies available'
+//             });
+//         }
+//         bookDoc.copies -= quantity;
+//         bookDoc.updateAvailability();
+//         await bookDoc.save();
+//         const borrow = await Borrow.create({ book, quantity, dueDate });
+//         res.status(201).json({ success: true, message: 'Book borrowed successfully', data: borrow });
+//     } catch (error) {
+//         res.status(400).json({ success: false, message: 'Borrowing failed', error });
+//     }
+// });
+
+
+borrowRoutes.post("/", async (req: Request, res: Response,next: NextFunction) : Promise<any>=>{
+  try {
+    const { book, quantity, dueDate } = req.body;
+    const bookDoc = await Book.findById(book) as BookDocument;
+
+    if (!bookDoc || bookDoc.copies < quantity) {
+      return res.status(400).json({
+        success: false,
+        message: 'Not enough copies available'
+      });
     }
+
+    bookDoc.copies -= quantity;
+    bookDoc.updateAvailability();
+    await bookDoc.save();
+
+    const borrow = await Borrow.create({ book, quantity, dueDate });
+
+    // Ensure consistent format by converting the Mongoose document to plain object (optional)
+    const borrowData = {
+      _id: borrow._id,
+      book: borrow.book,
+      quantity: borrow.quantity,
+      dueDate: borrow.dueDate,
+      createdAt: borrow.createdAt,
+      updatedAt: borrow.updatedAt
+    };
+
+    return res.status(201).json({
+      success: true,
+      message: 'Book borrowed successfully',
+      data: borrowData
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: 'Borrowing failed',
+      error
+    });
+  }
 });
 
 borrowRoutes.get("/", async (_req: Request, res: Response) => {
