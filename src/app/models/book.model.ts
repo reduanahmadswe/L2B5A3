@@ -66,4 +66,20 @@ bookSchema.methods.updateAvailability = function () {
   this.available = this.copies > 0;
 };
 
+bookSchema.pre('save', function (next) {
+  this.available = this.copies > 0;
+  next();
+});
+
+bookSchema.pre('findOneAndUpdate', async function (next) {
+  const update: any = this.getUpdate();
+
+  if (update && update.copies !== undefined) {
+    update.available = update.copies > 0;
+    this.setUpdate(update);
+  }
+
+  next();
+});
+
 export const Book = model<IBook>("Book", bookSchema);

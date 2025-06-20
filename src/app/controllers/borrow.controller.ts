@@ -40,18 +40,13 @@ borrowRoutes.post("/", async (req: Request, res: Response, next: NextFunction): 
             data: borrowData
         });
     } catch (error) {
-        // return res.status(400).json({
-        //     success: false,
-        //     message: 'Borrowing failed',
-        //     error
-        // });
         next(error);
     }
 });
 
 
 
-borrowRoutes.get("/", async (_req: Request, res: Response) => {
+borrowRoutes.get("/", async (_req: Request, res: Response,next: NextFunction) => {
   try {
     const summary = await Borrow.aggregate([
       {
@@ -94,10 +89,7 @@ borrowRoutes.get("/", async (_req: Request, res: Response) => {
       data: formatted
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve summary',
-      error
-    });
+
+    next(error);
   }
 });

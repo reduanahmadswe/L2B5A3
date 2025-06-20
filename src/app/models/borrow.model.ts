@@ -19,5 +19,9 @@ const borrowSchema = new Schema<IBorrow>({
     }
 }, { timestamps: true });
 
+borrowSchema.post('save', async function (doc) {
+  console.log(`Book borrowed: ${doc.book} | Quantity: ${doc.quantity}`);
+});
+
 export const Borrow = model<IBorrow>('Borrow', borrowSchema);
 
