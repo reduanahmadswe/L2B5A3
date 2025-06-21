@@ -1,6 +1,12 @@
 import { Document } from 'mongoose';
 
-export interface IBook {
+export interface BaseDocument {
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+
+export interface IBook extends BaseDocument{
   title: string;
   author: string;
   genre: 'FICTION' | 'NON_FICTION' | 'SCIENCE' | 'HISTORY' | 'BIOGRAPHY' | 'FANTASY';
@@ -8,8 +14,6 @@ export interface IBook {
   description: string;
   copies: number;
   available: boolean;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface BookDocument extends IBook, Document {
