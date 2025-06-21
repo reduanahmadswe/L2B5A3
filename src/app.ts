@@ -17,5 +17,8 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   errorHandler(err, req, res, next);
 });
 
+app.use('/',(req,res)=>{
+  res.send("Welcome to Library Management API with Express, TypeScript & MongoDB!");
+})
 
 export default app;

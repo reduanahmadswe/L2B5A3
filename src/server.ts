@@ -1,21 +1,23 @@
 import { Server } from 'http';
 import app from './app';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
+dotenv.config();
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 let server: Server;
 
 async function main() {
   try {
-    await mongoose.connect('mongodb+srv://mongodb:mongodb@cluster0.eteuyp6.mongodb.net/libraryManagementapi?retryWrites=true&w=majority&appName=Cluster0');
+    await mongoose.connect(process.env.MONGO_URI as string);
     server = app.listen(PORT, () => {
-      console.log(`🚀 Server is running on http://localhost:${PORT}`);
+      console.log(`Server is running on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('❌ Error starting server:', error);
+    console.error('Error starting server:', error);
   }
 }
 
-main(); 
+main();

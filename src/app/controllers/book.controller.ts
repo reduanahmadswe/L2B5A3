@@ -12,8 +12,23 @@ export const bookRoutes = express.Router();
 // Create Book
 bookRoutes.post('/', async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
-    
+
     const validatedBody = req.body
+
+    
+    const existingBook = await Book.findOne({ isbn: validatedBody.isbn });
+    if (existingBook) {
+      return res.status(400).json({
+        success: false,
+        message: 'Book with this ISBN already exists.',
+        error: {
+          field: 'isbn',
+          value: validatedBody.isbn
+        }
+      });
+    }
+
+
     const book = await Book.create(validatedBody);
 
     const bookObj = book.toObject();
@@ -38,9 +53,35 @@ bookRoutes.post('/', async (req: Request, res: Response, next: NextFunction): Pr
       data: reorderedBook
     });
   } catch (error: any) {
+    if (error.code === 11000 && error.keyPattern?.isbn) {
+      return res.status(400).json({
+        success: false,
+        message: 'ISBN already exists.',
+        error: {
+          field: 'isbn',
+          value: error.keyValue?.isbn
+        }
+      });
+    }
     return errorHandler(error, req, res, next);
   }
 });
+
+//Get All Books
+// bookRoutes.get('/', async (req: Request, res: Response, next: NextFunction)=> {
+//   try {
+//     const books = await Book.find(); 
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Books retrieved successfully",
+//       data: books,
+//     });
+
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 //Get All Books
 bookRoutes.get('/', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -94,19 +135,6 @@ bookRoutes.get('/', async (req: Request, res: Response, next: NextFunction): Pro
   }
 });
 
-// bookRoutes.get('/:bookId', async (req: Request, res: Response) => {
-//     const { bookId } = req.params;
-
-//     const book = await Book.findById(bookId);
-
-//     res.status(200).json({
-//         success: true,
-//         message: "Book retrieved successfully",
-//         data: book
-//     });
-
-// })
-
 //Get Book by ID
 bookRoutes.get('/:bookId', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -121,11 +149,6 @@ bookRoutes.get('/:bookId', async (req: Request, res: Response, next: NextFunctio
     });
 
   } catch (error) {
-    // res.status(500).json({
-    //   success: false,
-    //   message: "Failed to retrieve book",
-    //   error: (error as Error).message
-    // });
     next(error);
   }
 });
