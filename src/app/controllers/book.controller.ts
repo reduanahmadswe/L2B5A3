@@ -1,9 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
 import { Book } from "../models/book.model";
 
-import APIFunctionality from "../../utils/apiFunctionality";
+import APIFunctionality from "../utils/apiFunctionality";
 
-import { errorHandler } from './../../utils/errorHandler';
+import { errorHandler } from '../utils/errorHandler';
 
 export const bookRoutes = express.Router();
 
@@ -15,7 +15,7 @@ bookRoutes.post('/', async (req: Request, res: Response, next: NextFunction): Pr
 
     const validatedBody = req.body
 
-    
+
     const existingBook = await Book.findOne({ isbn: validatedBody.isbn });
     if (existingBook) {
       return res.status(400).json({

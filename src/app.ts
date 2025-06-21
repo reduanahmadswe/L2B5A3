@@ -1,7 +1,7 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import { bookRoutes } from './app/controllers/book.controller';
 import { borrowRoutes } from './app/controllers/borrow.controller';
-import { errorHandler } from './utils/errorHandler'; 
+import { errorHandler } from './app/utils/errorHandler';
 
 
 const app: Application = express();
@@ -17,7 +17,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   errorHandler(err, req, res, next);
 });
 
-app.use('/',(req,res)=>{
+app.use('/', (req, res) => {
   res.send("Welcome to Library Management API with Express, TypeScript & MongoDB!");
 })
 
